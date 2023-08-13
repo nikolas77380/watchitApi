@@ -148,7 +148,7 @@ export class UserService {
         const userRegistrationInfo = {
             fullName: user.fullName,
             email: user.email,
-            verified: user.verified,
+            verified: user.verification,
         };
         return userRegistrationInfo;
     }

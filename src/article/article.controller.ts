@@ -48,7 +48,8 @@ export class ArticleController {
     @ApiOkResponse({})
     async getByArticle(@Param() params) {
         const showsRequest = await axios.get('https://api.tvmaze.com/shows');
-        return showsRequest.data.filter(el => el.genres.includes(params.genre))
+        const shows = showsRequest.data.filter(el => el.genres.includes(params.genre)).slice(0, 9);
+        return shows;
     }
 
     @Post()

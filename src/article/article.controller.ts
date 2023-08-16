@@ -14,6 +14,7 @@ import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from './../auth/decorators/roles.decorator';
+import axios from 'axios';
 
 @ApiUseTags('Article')
 @Controller('article')
@@ -38,6 +39,16 @@ export class ArticleController {
     @ApiOkResponse({})
     async getOneArticles(@Param() params) {
         return await this.articleService.getOneArticle(params.id);
+    }
+
+    @Get(':genre')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({title: 'Get shows by genre',})
+    @ApiImplicitParam({name: 'genre', description: 'genre for show'})
+    @ApiOkResponse({})
+    async getByArticle(@Param() params) {
+        const showsRequest = await axios.get('https://api.tvmaze.com/shows');
+        return showsRequest.data.filter(el => el.genres.includes(params.genre))
     }
 
     @Post()

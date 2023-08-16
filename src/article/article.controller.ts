@@ -41,7 +41,7 @@ export class ArticleController {
         return await this.articleService.getOneArticle(params.id);
     }
 
-    @Get(':genre')
+    @Get('/byGenre/:genre')
     @HttpCode(HttpStatus.OK)
     @ApiOperation({title: 'Get shows by genre',})
     @ApiImplicitParam({name: 'genre', description: 'genre for show'})
@@ -51,7 +51,16 @@ export class ArticleController {
         const shows = showsRequest.data.filter(el => el.genres.includes(params.genre)).slice(0, 9);
         return shows;
     }
-
+    @Get('/popular')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({title: 'Get shows by genre',})
+    @ApiImplicitParam({name: 'genre', description: 'genre for show'})
+    @ApiOkResponse({})
+    async getMostPopular(@Param() params) {
+        const showsRequest = await axios.get('https://api.tvmaze.com/shows');
+        const shows = showsRequest.data.sort((a, b) => b.rating.average - a.rating.average).slice(0, 9);
+        return shows;
+    }
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @UseGuards(AuthGuard('jwt'))

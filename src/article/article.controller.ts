@@ -51,10 +51,19 @@ export class ArticleController {
         const shows = showsRequest.data.filter(el => el.genres.includes(params.genre)).slice(0, 9);
         return shows;
     }
+    @Get('/byCountry/:id')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({title: 'Get popular shows by country',})
+    @ApiImplicitParam({name: 'id', description: 'country id'})
+    @ApiOkResponse({})
+    async getPopularByCountry(@Param() params) {
+        const showsRequest = await axios.get(`https://www.tvmaze.com/shows?Show%5Bcountry_enum%5D=${params.id}`);
+        const shows = showsRequest.data.sort((a, b) => b.rating.average - a.rating.average).slice(0, 9);
+        return shows;
+    }
     @Get('/popular')
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({title: 'Get shows by genre',})
-    @ApiImplicitParam({name: 'genre', description: 'genre for show'})
+    @ApiOperation({title: 'Get popular shows',})
     @ApiOkResponse({})
     async getMostPopular(@Param() params) {
         const showsRequest = await axios.get('https://api.tvmaze.com/shows');

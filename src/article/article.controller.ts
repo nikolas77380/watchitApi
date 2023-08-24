@@ -57,7 +57,8 @@ export class ArticleController {
     @ApiImplicitParam({name: 'id', description: 'country id'})
     @ApiOkResponse({})
     async getPopularByCountry(@Param() params) {
-        const showsRequest = await axios.get(`https://www.tvmaze.com/shows?Show%5Bcountry_enum%5D=${params.id}`);
+        const showsRequest = await axios.get(`https://api.tvmaze.com/shows?Show%5Bcountry_enum%5D=${params.id}`);
+        console.log(showsRequest)
         const shows = showsRequest.data.sort((a, b) => b.rating.average - a.rating.average).slice(0, 9);
         return shows;
     }

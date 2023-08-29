@@ -29,7 +29,10 @@ export class ArticleController {
     @ApiOperation({title: 'Get All article',})
     @ApiOkResponse({})
     async getAllArticle() {
-        return await this.articleService.getAllArticles();
+        const showsRequest = await axios.get(`https://api.tvmaze.com/shows`);
+        const shows = showsRequest.data.sort((a, b) => b.rating.average - a.rating.average).slice(0, 9);
+        return shows;
+        // return await this.articleService.getAllArticles();
     }
 
     @Get(':id')
@@ -58,7 +61,6 @@ export class ArticleController {
     @ApiOkResponse({})
     async getPopularByCountry(@Param() params) {
         const showsRequest = await axios.get(`https://api.tvmaze.com/shows?Show%5Bcountry_enum%5D=${params.id}`);
-        console.log(showsRequest)
         const shows = showsRequest.data.sort((a, b) => b.rating.average - a.rating.average).slice(0, 9);
         return shows;
     }
@@ -68,6 +70,7 @@ export class ArticleController {
     @ApiOkResponse({})
     async getMostPopular(@Param() params) {
         const showsRequest = await axios.get('https://api.tvmaze.com/shows');
+        console.log(showsRequest)
         const shows = showsRequest.data.sort((a, b) => b.rating.average - a.rating.average).slice(0, 9);
         return shows;
     }

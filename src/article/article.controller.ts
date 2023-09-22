@@ -12,13 +12,14 @@ import {
   ApiUseTags,
   ApiOperation,
   ApiImplicitParam,
+  ApiImplicitQuery,
 } from '@nestjs/swagger';
 
 import { ArticleService } from './article.service';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import axios from 'axios';
 
-@ApiUseTags('Article')
+@ApiUseTags('Show')
 @Controller('article')
 @UseGuards(RolesGuard)
 export class ArticleController {
@@ -28,6 +29,18 @@ export class ArticleController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ title: 'Get All shows & search' })
+  @ApiImplicitQuery({
+    name: 'q',
+    type: 'string',
+    description: 'Query for search',
+    required: false,
+  })
+  @ApiImplicitQuery({
+    name: 'amount',
+    type: 'number',
+    description: 'Number of shows',
+    required: false,
+  })
   @ApiOkResponse({})
   async getAllArticle(@Query() query) {
     const { q, amount } = query;
@@ -49,20 +62,28 @@ export class ArticleController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ title: 'Get One article' })
-  @ApiImplicitParam({ name: 'id', description: 'id of article' })
+  @ApiOperation({ title: 'Get One show' })
+  @ApiImplicitParam({ name: 'id', description: 'id of show' })
   @ApiOkResponse({})
   async getOneArticles(@Param() params) {
     const { id } = params;
     const queryString = `${this.BASE_URL}shows/${id}`;
     const showRequest = await axios.get(queryString);
-    return showRequest.data;
+    const seriesRequest = await axios.get(`${queryString}/episodes`);
+    const views = Math.floor(Math.random() * 10000);
+    return { ...showRequest.data, views, series: seriesRequest.data };
   }
 
   @Get('/byGenre/:genre')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ title: 'Get shows by genre' })
   @ApiImplicitParam({ name: 'genre', description: 'genre for show' })
+  @ApiImplicitQuery({
+    name: 'amount',
+    type: 'number',
+    description: 'Number of shows',
+    required: false,
+  })
   @ApiOkResponse({})
   async getByArticle(@Param() params, @Query() query) {
     const { amount } = query;
@@ -102,7 +123,8 @@ export class ArticleController {
   }
   @Get('/actor/:id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ title: 'Get actor' })
+  @ApiOperation({ title: 'Get Actor by id' })
+  @ApiImplicitParam({ name: 'id', description: 'Actor id' })
   @ApiOkResponse({})
   async getActor(@Param() params) {
     const actorRequest = await axios.get(`${this.BASE_URL}people/${params.id}`);

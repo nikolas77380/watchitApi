@@ -29,7 +29,7 @@ async function bootstrap() {
     .addTag('API')
     .build();
   const document = SwaggerModule.createDocument(app, options, {
-    include: [UserModule, ArticleModule],
+    // include: [UserModule, ArticleModule],
   });
   SwaggerModule.setup('api', app, document);
 

@@ -17,7 +17,7 @@ import {
 
 import { ArticleService } from './article.service';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 @ApiUseTags('Show')
 @Controller('article')
@@ -132,8 +132,21 @@ export class ArticleController {
       `${this.BASE_URL}people/${params.id}/castcredits`,
     );
     const castsData = casts.data;
+    const castsRequests = castsData.map(el => el._links.show.href);
+    const castsPromises = await Promise.all(
+      castsRequests.map(req => axios.get(req)),
+    );
+    const castsResult = castsPromises.map((el: AxiosResponse) => ({
+      id: el.data.id,
+      name: el.data.name,
+      rating: el.data.raiting,
+      image: el.data.image,
+    }));
     const actorData = actorRequest.data;
 
-    return { ...actorData, casts: castsData.map(el => el._links) };
+    return {
+      ...actorData,
+      casts: castsResult,
+    };
   }
 }

@@ -25,6 +25,17 @@ import axios, { AxiosResponse } from 'axios';
 export class ArticleController {
   private BASE_URL = `https://api.tvmaze.com/`;
   constructor(private readonly articleService: ArticleService) {}
+  @Get('/popular')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ title: 'Get popular shows' })
+  @ApiOkResponse({})
+  async getMostPopular(@Param() params) {
+    const showsRequest = await axios.get(`${this.BASE_URL}shows`);
+    const shows = showsRequest.data
+      .sort((a, b) => b.rating.average - a.rating.average)
+      .slice(0, 9);
+    return shows;
+  }
 
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -110,17 +121,7 @@ export class ArticleController {
     );
     return amount ? shows.slice(0, amount) : shows;
   }
-  @Get('/popular')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ title: 'Get popular shows' })
-  @ApiOkResponse({})
-  async getMostPopular(@Param() params) {
-    const showsRequest = await axios.get(`${this.BASE_URL}shows`);
-    const shows = showsRequest.data
-      .sort((a, b) => b.rating.average - a.rating.average)
-      .slice(0, 9);
-    return shows;
-  }
+
   @Get('/actor/:id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ title: 'Get Actor by id' })

@@ -150,7 +150,7 @@ export class ArticleController {
       casts: castsResult,
     };
   }
-  @Get('/:id/cast')
+  @Get(':id/cast')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ title: 'get show Cast' })
   @ApiImplicitParam({ name: 'id', description: 'show id' })
@@ -159,6 +159,6 @@ export class ArticleController {
     const castRequest = await axios.get(
       `${this.BASE_URL}shows/${params.id}/cast`,
     );
-    return castRequest;
+    return castRequest.data;
   }
 }

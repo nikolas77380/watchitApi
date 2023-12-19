@@ -18,6 +18,7 @@ import {
 import { ArticleService } from './article.service';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import axios, { AxiosResponse } from 'axios';
+import { parse } from 'node-html-parser';
 
 @ApiUseTags('Show')
 @Controller('article')
@@ -137,6 +138,7 @@ export class ArticleController {
     const castsPromises = await Promise.all(
       castsRequests.map(req => axios.get(req)),
     );
+
     const castsResult = castsPromises.map((el: AxiosResponse) => ({
       id: el.data.id,
       name: el.data.name,
@@ -145,6 +147,12 @@ export class ArticleController {
     }));
     const actorData = actorRequest.data;
 
+    const test = await axios.get(actorData.url);
+    const root = parse(test.data);
+    actorData.summary = root
+      .querySelector('#general-information article')
+      .textContent.toString()
+      .trim();
     return {
       ...actorData,
       casts: castsResult,
